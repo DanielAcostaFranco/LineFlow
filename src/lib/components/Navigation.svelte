@@ -9,6 +9,10 @@
         <i class="h-px w-4 bg-white"></i><i class="h-px w-3 bg-white"></i><i class="h-px w-1.5 bg-white"></i>
       </span>LineFlow
     </a>
-    <a href={resolve('/preview')} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Component preview</a>
+    <div class="flex flex-wrap items-center gap-4">
+      <a href={resolve('/preview')} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Component preview</a>
+      <a href={resolve('/login')} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Log in</a>
+      <a href={resolve('/signup')} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Sign up</a>
+    </div>
   </div>
 </nav>
