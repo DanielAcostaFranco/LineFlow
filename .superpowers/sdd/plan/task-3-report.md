@@ -43,3 +43,24 @@ Implemented Task 3 on `feature/mongodb-auth-foundation`.
 - A live signup/session-lookup smoke test against Atlas was not possible without database credentials; auth setup and session-related wiring are covered by isolated tests, but persisted behavior should be confirmed in an environment with MongoDB configured.
 - `npm install` reported **9 high-severity audit findings**. They were not addressed because dependency remediation is outside this task's scope.
 - `adapter-auto` did not detect a production deployment target during the successful build; selecting a deployment adapter is outside this task.
+
+## Review fix: retry failed auth initialization
+
+- Clear the cached auth initialization promise on rejection and rethrow the original error. Concurrent requests still share an initialization attempt, while a later request can retry. Successful initialization remains cached.
+- Retained queue index initialization before Better Auth and its failure-propagation test.
+
+### TDD evidence
+
+- **RED:** `npm test -- src/lib/server/auth.test.ts -t "retries auth initialization after a transient index failure"` exited 1: **1 failed, 4 skipped**. The retry still rejected with `Error: queue index unavailable` from the first attempt.
+- **GREEN:** The same command exited 0: **1 passed, 4 skipped**. The test also checks concurrent failures and reuse of the successful retry.
+
+### Validation
+
+- `npm test -- src/lib/server/auth.test.ts` -- **1 file passed; 5 tests passed**.
+- `npm test` -- **7 files passed; 26 tests passed**.
+- `npm run check` -- **0 errors, 0 warnings**.
+- `npm run build` -- **passed**; adapter-auto still reports no detected production environment.
+
+### Concerns
+
+- Live MongoDB signup and session lookup remain unverified without configured database credentials. The earlier dependency audit findings were not reassessed or addressed in this narrow fix.

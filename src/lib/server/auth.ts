@@ -51,6 +51,9 @@ async function initializeAuth() {
 let authPromise: ReturnType<typeof initializeAuth> | undefined;
 
 export function getAuth() {
-	authPromise ??= initializeAuth();
+	authPromise ??= initializeAuth().catch((error) => {
+		authPromise = undefined;
+		throw error;
+	});
 	return authPromise;
 }

@@ -97,4 +97,21 @@ describe('Better Auth configuration', () => {
 		await expect(getAuth()).rejects.toThrow('queue index unavailable');
 		expect(mocks.betterAuth).not.toHaveBeenCalled();
 	});
+
+	it('retries auth initialization after a transient index failure', async () => {
+		mocks.privateEnv.BETTER_AUTH_SECRET = 'a'.repeat(32);
+		mocks.privateEnv.BETTER_AUTH_URL = 'https://lineflow.example';
+		mocks.ensureQueueIndexes.mockRejectedValueOnce(new Error('queue index unavailable'));
+		const { getAuth } = await import('./auth');
+
+		const first = getAuth();
+		const concurrent = getAuth();
+		await expect(first).rejects.toThrow('queue index unavailable');
+		await expect(concurrent).rejects.toThrow('queue index unavailable');
+
+		const auth = await getAuth();
+		expect(await getAuth()).toBe(auth);
+		expect(mocks.ensureQueueIndexes).toHaveBeenCalledTimes(2);
+		expect(mocks.betterAuth).toHaveBeenCalledOnce();
+	});
 });
