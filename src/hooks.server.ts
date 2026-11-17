@@ -1,0 +1,15 @@
+import { building } from '$app/env';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { getAuth } from './lib/server/auth';
+
+export const handle: Handle = async ({ event, resolve }) => {
+	if (!building) {
+		const auth = await getAuth();
+		const session = await auth.api.getSession({ headers: event.request.headers });
+
+		event.locals.user = session?.user ?? null;
+		event.locals.session = session?.session ?? null;
+	}
+
+	return resolve(event);
+};
