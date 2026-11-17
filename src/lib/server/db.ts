@@ -1,4 +1,4 @@
-import { env } from 'node:process';
+import * as env from '$app/env/private';
 import { MongoClient, type Db } from 'mongodb';
 
 function requiredEnvironmentValue(name: 'MONGODB_URI' | 'MONGODB_DB'): string {
