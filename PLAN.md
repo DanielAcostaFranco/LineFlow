@@ -10,7 +10,7 @@ Turn the current project stub into an actionable MVP blueprint for a web-first d
 - **Database:** MongoDB Atlas, using the official Node.js driver or Mongoose. Keep MongoDB as the system of record; use unique indexes and atomic updates for queue operations.
 - **Live updates:** Pusher Channels, with private channels for host views and appropriately scoped customer updates. Persist a change before publishing an event; provide a refresh/reconnect path so clients recover from missed events.
 - **Authentication and authorization:** A maintained SvelteKit-compatible auth solution with server-side sessions. Add `host` and `customer` roles and check permissions on every protected server action/API call; hiding UI is not authorization.
-- **UI and validation:** Tailwind CSS (optional) and a shared schema validator such as Zod for server inputs. Keep the UI accessible and usable on mobile.
+- **UI and validation:** Tailwind CSS and a shared schema validator such as Zod for server inputs. Keep the UI accessible and usable on mobile.
 - **Hosting:** SvelteKit-compatible hosting plus MongoDB Atlas and Pusher. Keep credentials in environment secrets and define dev/staging/production environments.
 
 ## MVP scope
