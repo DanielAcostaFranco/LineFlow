@@ -10,15 +10,10 @@
         <i class="h-px w-4 bg-white"></i><i class="h-px w-3 bg-white"></i><i class="h-px w-1.5 bg-white"></i>
       </span>LineFlow
     </a>
-    <div class="flex flex-wrap items-center gap-4 text-sm">
-      {#if page.route.id === '/preview'}
-        <a href={resolve('/preview')} aria-current="page" class="inline-flex min-h-11 items-center underline underline-offset-4">Component preview</a>
-      {:else}
-        <a href={resolve('/login')} aria-current={page.route.id === '/login' ? 'page' : undefined}
-          class="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Log in</a>
-        <a href={resolve('/host/login')} aria-current={page.route.id === '/host/login' ? 'page' : undefined}
-          class="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Host sign-in</a>
-      {/if}
+    <div class="flex flex-wrap items-center gap-4">
+      <a href={resolve('/preview')} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Component preview</a>
+      <a href={resolve('/login')} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Log in</a>
+      <a href={resolve('/signup')} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Sign up</a>
     </div>
   </div>
 </nav>
