@@ -1,4 +1,4 @@
-import type { Queue, TicketView, User } from './queue';
+import type { Queue, QueueTicket, TicketView, User } from './queue';
 
 export const host: User = { id: 'demo-host', name: 'Sam', role: 'host' };
 export const customer: User = { id: 'demo-customer', name: 'Alex', role: 'customer' };
@@ -18,3 +18,12 @@ export const ticketViews = {
     }
   }
 } satisfies Record<TicketView['state'], TicketView>;
+
+// Each fixture is independent so previews can change status without mutating the waiting ticket.
+export const ticketsByStatus = {
+  waiting: { ...ticketViews.success.ticket },
+  called: { ...ticketViews.success.ticket, status: 'called', position: null, estimatedMinutes: null },
+  completed: { ...ticketViews.success.ticket, status: 'completed', position: null, estimatedMinutes: null },
+  skipped: { ...ticketViews.success.ticket, status: 'skipped', position: null, estimatedMinutes: null },
+  left: { ...ticketViews.success.ticket, status: 'left', position: null, estimatedMinutes: null }
+} satisfies Record<QueueTicket['status'], QueueTicket>;

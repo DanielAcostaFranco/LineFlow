@@ -1,5 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
 </script>
 
 <nav aria-label="Main" class="border-b border-line bg-white">

@@ -14,7 +14,12 @@
     <p class="mt-4 text-muted">Explore LineFlow’s shared components with a sample queue.</p>
     <a href={resolve('/preview')} class="mt-6 inline-flex min-h-11 items-center rounded-control bg-action px-4 text-white">Open component preview</a>
   </section>
-  <div class="rounded-control bg-sage p-4 sm:p-6">
+  <figure class="min-w-0 rounded-control bg-sage p-4 sm:p-6">
     <QueueTicket queue={ticketViews.success.queue} ticket={ticketViews.success.ticket} />
-  </div>
+    <figcaption class="mt-3 text-center text-sm text-muted">Sample queue</figcaption>
+  </figure>
 </div>
+<footer class="mt-10 flex flex-wrap justify-between gap-3 border-t border-line pt-5 text-sm text-muted sm:mt-16">
+  <span>LineFlow</span>
+  <span>Less waiting. More living.</span>
+</footer>

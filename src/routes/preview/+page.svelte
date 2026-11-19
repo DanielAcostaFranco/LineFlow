@@ -3,27 +3,31 @@
   import ConfirmDialog from '#lib/components/ConfirmDialog.svelte';
   import QueueTicket from '#lib/components/QueueTicket.svelte';
   import TextField from '#lib/components/TextField.svelte';
-  import { queue, ticketViews } from '#lib/fixtures.ts';
-  import type { TicketView } from '#lib/queue.ts';
+  import { queue, ticketViews, ticketsByStatus } from '#lib/fixtures.ts';
+  import type { QueueTicket as Ticket, TicketView } from '#lib/queue.ts';
 
   let previewState = $state<TicketView['state']>('success');
   let view = $derived(ticketViews[previewState]);
+  let ticketStatus = $state<Ticket['status']>('waiting');
   let code = $state(queue.id);
+  let previewHeading: HTMLHeadingElement;
   let feedback = $state('');
   let dialog: ConfirmDialog;
 
   function findTicket() {
     feedback = code.trim().toUpperCase() === queue.id ? '' : 'Use CAMPUS to preview a ticket.';
     previewState = feedback ? 'error' : 'success';
+    ticketStatus = 'waiting';
   }
 </script>
 <svelte:head><title>Component preview | LineFlow</title></svelte:head>
-<h1 class="text-3xl font-medium tracking-tight">Component preview</h1>
+<h1 bind:this={previewHeading} tabindex="-1" class="text-3xl font-medium tracking-tight">Component preview</h1>
 <div class="mt-6 grid items-start gap-6 md:grid-cols-2">
   <section class="space-y-5 rounded-control border border-line bg-white p-5">
     <form onsubmit={(event) => { event.preventDefault(); findTicket(); }}>
-      <TextField id="code" label="Sample queue code" bind:value={code} error={feedback} />
-      <Button type="submit" class="mt-3">Find sample ticket</Button>
+      <TextField id="code" label="Sample queue code" bind:value={code} error={feedback} aria-describedby="code-hint" />
+      <p id="code-hint" class="mt-2 text-sm text-muted">Use CAMPUS for the sample queue.</p>
+      <Button type="submit" class="mt-3" loading={previewState === 'loading'} loadingLabel="Finding ticket…">Find sample ticket</Button>
     </form>
     <label class="block text-sm font-medium">Preview state
       <select bind:value={previewState} onchange={() => feedback = ''} class="mt-2 block min-h-11 w-full rounded-control border border-muted bg-white px-3">
@@ -31,18 +35,28 @@
         <option value="empty">Empty</option><option value="error">Error</option>
       </select>
     </label>
+    <label class="block text-sm font-medium">Ticket status
+      <select bind:value={ticketStatus} disabled={previewState !== 'success'}
+        class="mt-2 block min-h-11 w-full rounded-control border border-muted bg-white px-3 disabled:opacity-50">
+        <option value="waiting">Waiting</option>
+        <option value="called">Called</option>
+        <option value="completed">Completed</option>
+        <option value="skipped">Skipped</option>
+        <option value="left">Left</option>
+      </select>
+    </label>
   </section>
   <section aria-label="Ticket preview" class="space-y-4">
     <div aria-live="polite">
       {#if view.state === 'success'}
-        <QueueTicket queue={view.queue} ticket={view.ticket} />
+        <QueueTicket queue={view.queue} ticket={ticketsByStatus[ticketStatus]} />
       {:else}
         <p class="rounded-control border border-line bg-white p-6">
           {view.state === 'error' ? view.message : view.state === 'loading' ? 'Loading ticket…' : 'No active ticket.'}
         </p>
       {/if}
     </div>
-    {#if previewState === 'success'}
+    {#if previewState === 'success' && ticketStatus === 'waiting'}
       <Button variant="secondary" onclick={() => dialog.open()}>Leave sample queue</Button>
     {:else if previewState === 'error'}
       <Button variant="secondary" onclick={() => { code = queue.id; findTicket(); }}>Retry sample queue</Button>
@@ -50,4 +64,4 @@
   </section>
 </div>
 <ConfirmDialog bind:this={dialog} title="Leave the queue?" message="Leaving gives up your place in this sample queue."
-  confirmLabel="Leave queue" onconfirm={() => previewState = 'empty'} />
+  confirmLabel="Leave queue" onconfirm={() => { previewState = 'empty'; previewHeading.focus(); }} />
