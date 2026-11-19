@@ -1,5 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
 </script>
 
 <nav aria-label="Main" class="border-b border-line bg-white">
@@ -9,6 +10,15 @@
         <i class="h-px w-4 bg-white"></i><i class="h-px w-3 bg-white"></i><i class="h-px w-1.5 bg-white"></i>
       </span>LineFlow
     </a>
-    <a href={resolve('/preview')} class="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Component preview</a>
+    <div class="flex flex-wrap items-center gap-4 text-sm">
+      {#if page.route.id === '/preview'}
+        <a href={resolve('/preview')} aria-current="page" class="inline-flex min-h-11 items-center underline underline-offset-4">Component preview</a>
+      {:else}
+        <a href={resolve('/login')} aria-current={page.route.id === '/login' ? 'page' : undefined}
+          class="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Log in</a>
+        <a href={resolve('/host/login')} aria-current={page.route.id === '/host/login' ? 'page' : undefined}
+          class="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Host sign-in</a>
+      {/if}
+    </div>
   </div>
 </nav>
