@@ -6,10 +6,13 @@ export interface User {
 
 export interface Queue {
   id: string;
+  organization: string;
   name: string;
   ownerId: string;
   status: 'open' | 'paused' | 'closed';
   capacity: number;
+  waitingCount: number;
+  avgServiceMinutes: number;
 }
 
 export interface QueueTicket {
@@ -25,3 +28,9 @@ export type TicketView =
   | { state: 'loading' | 'empty' }
   | { state: 'error'; message: string }
   | { state: 'success'; queue: Queue; ticket: QueueTicket };
+
+export type QueueLookup =
+  | { state: 'loading' }
+  | { state: 'not-found'; code: string }
+  | { state: 'error'; message: string }
+  | { state: 'found'; queue: Queue };
