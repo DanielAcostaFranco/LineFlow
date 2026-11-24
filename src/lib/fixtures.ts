@@ -3,7 +3,8 @@ import type { Queue, QueueTicket, TicketView, User } from './queue';
 export const host: User = { id: 'demo-host', name: 'Sam', role: 'host' };
 export const customer: User = { id: 'demo-customer', name: 'Alex', role: 'customer' };
 export const queue: Queue = {
-  id: 'CAMPUS', name: 'Student services', ownerId: host.id, status: 'open', capacity: 25
+  id: 'CAMPUS', organization: 'Campus Center', name: 'Student services', ownerId: host.id,
+  status: 'open', capacity: 25, waitingCount: 3, avgServiceMinutes: 5
 };
 
 export const ticketViews = {
