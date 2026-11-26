@@ -16,6 +16,17 @@ The frontend uses SvelteKit, TypeScript, Tailwind CSS and Vite. See [PLAN.md](./
 
 Use separate credentials and secrets for separate environments. All instances serving the same deployment must use that deployment's same secret. Never put real secrets or Atlas credentials in `.env.example`.
 
+### Google sign-in
+
+Email/password authentication works without Google credentials. To enable Google sign-in:
+
+1. Configure the Google Cloud OAuth consent screen and create a **Web application** OAuth client. If the app is in testing mode, add the intended Google accounts as test users.
+2. Register the authorized redirect URI `http://localhost:5173/api/auth/callback/google` for local development. For each deployment, register its actual HTTPS origin followed by `/api/auth/callback/google`.
+3. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env` or your deployment's secret configuration. Both must be set together. Keep the secret private and use separate OAuth credentials for separate environments.
+4. Ensure `BETTER_AUTH_URL` matches the browser origin and the registered redirect URI, then restart the app.
+
+The login and signup pages offer Google when it is configured. New Google users are customers; host access still requires the controlled operator procedure below. An existing email/password user must first sign in and use **Account → Connect Google** with a Google account using the same email. Accounts are never implicitly linked. Connecting Google does not verify an existing unverified LineFlow email address.
+
 ## Accounts and host access
 
 Use `/signup` to create an account or `/login` to sign in. Public signup creates a customer and cannot choose a role. `/host` requires the host role; customers receive HTTP 403.
@@ -24,7 +35,7 @@ Only a trusted operator with authorized database access may designate a host. Ve
 
 ## Verification
 
-Run `npm test`, `npm run check`, and `npm run build`. With a configured database, manually create an account, log in, and verify that a customer is denied access to `/host`.
+Run `npm test`, `npm run check`, and `npm run build`. With a configured database, manually create an account, log in, and verify that a customer is denied access to `/host`. With Google configured, test Google signup and login, explicit linking for an existing account, cancellation, a different-email linking attempt, and logout. Confirm a newly created Google user cannot access `/host`.
 
 ## Backend queue API
 

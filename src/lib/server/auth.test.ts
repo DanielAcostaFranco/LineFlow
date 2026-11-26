@@ -26,6 +26,12 @@ vi.mock('$app/env/private', () => ({
 	},
 	get BETTER_AUTH_URL() {
 		return mocks.privateEnv.BETTER_AUTH_URL;
+	},
+	get GOOGLE_CLIENT_ID() {
+		return mocks.privateEnv.GOOGLE_CLIENT_ID;
+	},
+	get GOOGLE_CLIENT_SECRET() {
+		return mocks.privateEnv.GOOGLE_CLIENT_SECRET;
 	}
 }));
 vi.mock('$app/server', () => ({ getRequestEvent: () => undefined }));
@@ -42,6 +48,8 @@ beforeEach(() => {
 	vi.clearAllMocks();
 	delete mocks.privateEnv.BETTER_AUTH_SECRET;
 	delete mocks.privateEnv.BETTER_AUTH_URL;
+	delete mocks.privateEnv.GOOGLE_CLIENT_ID;
+	delete mocks.privateEnv.GOOGLE_CLIENT_SECRET;
 });
 
 describe('Better Auth configuration', () => {
@@ -87,6 +95,39 @@ describe('Better Auth configuration', () => {
 			})
 		);
 	});
+
+	it('configures Google and prevents implicit linking to existing accounts', async () => {
+		mocks.privateEnv.BETTER_AUTH_SECRET = 'a'.repeat(32);
+		mocks.privateEnv.BETTER_AUTH_URL = 'https://lineflow.example';
+		mocks.privateEnv.GOOGLE_CLIENT_ID = 'google-client-id';
+		mocks.privateEnv.GOOGLE_CLIENT_SECRET = 'google-client-secret';
+		const { getAuth } = await import('./auth');
+
+		await getAuth();
+
+		expect(mocks.betterAuth).toHaveBeenCalledWith(
+			expect.objectContaining({
+				socialProviders: {
+					google: { clientId: 'google-client-id', clientSecret: 'google-client-secret' }
+				},
+				account: { accountLinking: { disableImplicitLinking: true } },
+				onAPIError: { errorURL: 'https://lineflow.example/login' }
+			})
+		);
+	});
+
+	it.each(['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'])(
+		'rejects incomplete Google configuration when only %s is set',
+		async (name) => {
+			mocks.privateEnv.BETTER_AUTH_SECRET = 'a'.repeat(32);
+			mocks.privateEnv.BETTER_AUTH_URL = 'https://lineflow.example';
+			mocks.privateEnv[name] = 'configured';
+			const { getAuth } = await import('./auth');
+
+			await expect(getAuth()).rejects.toThrow('Both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
+			expect(mocks.betterAuth).not.toHaveBeenCalled();
+		}
+	);
 
 	it('surfaces database index initialization failures', async () => {
 		mocks.privateEnv.BETTER_AUTH_SECRET = 'a'.repeat(32);
